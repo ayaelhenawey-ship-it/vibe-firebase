@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../models/user_model.dart';
-import '../services/api_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -24,17 +23,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadUserData() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final userId = authProvider.userId;
+    final user = authProvider.user;
     
-    if (userId != null) {
+    if (user != null) {
       try {
-        final userData = await ApiService().getUser(userId);
-        final posts = await ApiService().getUserPosts(userId);
+        _userData = user;
+        _userPosts = [
+          {
+            'title': 'Welcome Post',
+            'body': 'This is your first post on VIBE!',
+            'date': '2 hours ago',
+          },
+          {
+            'title': 'Getting Started',
+            'body': 'Explore the app and connect with others.',
+            'date': 'Yesterday',
+          },
+        ];
         
         if (mounted) {
           setState(() {
-            _userData = UserModel.fromJson(userData);
-            _userPosts = posts;
             _isLoading = false;
           });
         }
@@ -53,122 +61,80 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        centerTitle: true,
         title: const Text(
           'PROFILE',
-          style: TextStyle(color: Color(0xFFC9A96E), letterSpacing: 2),
+          style: TextStyle(color: Color(0xFFC9A96E), letterSpacing: 4, fontWeight: FontWeight.w300),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout_rounded, color: Color(0xFFC9A96E)),
+            onPressed: () async {
+              await Provider.of<AuthProvider>(context, listen: false).logout();
+              if (mounted) Navigator.pushReplacementNamed(context, '/login');
+            },
+          ),
+        ],
         iconTheme: const IconThemeData(color: Color(0xFFC9A96E)),
       ),
       body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: Color(0xFFC9A96E)),
-            )
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFFC9A96E)))
           : _userData == null
-              ? const Center(
-                  child: Text(
-                    'Failed to load profile',
-                    style: TextStyle(color: Colors.white70),
-                  ),
-                )
+              ? const Center(child: Text('Failed to load profile', style: TextStyle(color: Colors.white70)))
               : SingleChildScrollView(
-                  padding: const EdgeInsets.all(20),
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      const SizedBox(height: 20),
                       Center(
-                        child: Column(
-                          children: [
-                            CircleAvatar(
-                              radius: 50,
-                              backgroundColor: const Color(0xFFC9A96E),
-                              child: Text(
-                                _userData!.firstName.isNotEmpty
-                                    ? _userData!.firstName[0].toUpperCase()
-                                    : 'U',
-                                style: const TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              _userData!.fullName,
-                              style: const TextStyle(
-                                color: Color(0xFFE8D5A3),
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              '@${_userData!.username}',
-                              style: const TextStyle(
-                                color: Colors.white70,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1A2A4E),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildProfileItem('Email', _userData!.email),
-                            const SizedBox(height: 12),
-                            _buildProfileItem('Username', _userData!.username),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'MY POSTS',
-                            style: TextStyle(
-                              color: Color(0xFFC9A96E),
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1,
-                            ),
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: const Color(0xFFC9A96E).withValues(alpha: 0.3), width: 2),
                           ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF1A2A4E),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
+                          child: CircleAvatar(
+                            radius: 55,
+                            backgroundColor: const Color(0xFFC9A96E),
                             child: Text(
-                              _userPosts.length.toString(),
-                              style: const TextStyle(
-                                color: Color(0xFFC9A96E),
-                                fontWeight: FontWeight.bold,
-                              ),
+                              _userData!.firstName.isNotEmpty ? _userData!.firstName[0].toUpperCase() : 'U',
+                              style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Color(0xFF0D1B3E)),
                             ),
                           ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        _userData!.fullName,
+                        style: const TextStyle(color: Color(0xFFE8D5A3), fontSize: 26, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        '@${_userData!.username}',
+                        style: TextStyle(color: const Color(0xFFC9A96E).withValues(alpha: 0.7), fontSize: 16),
+                      ),
+                      const SizedBox(height: 30),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildStatColumn('Posts', _userPosts.length.toString()),
+                          _buildStatDivider(),
+                          _buildStatColumn('Followers', '1.2k'),
+                          _buildStatDivider(),
+                          _buildStatColumn('Following', '850'),
                         ],
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 35),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'RECENT ACTIVITY',
+                          style: TextStyle(color: const Color(0xFFC9A96E).withValues(alpha: 0.8), letterSpacing: 2, fontSize: 13, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      const SizedBox(height: 15),
                       if (_userPosts.isEmpty)
-                        const Padding(
-                          padding: EdgeInsets.all(20),
-                          child: Text(
-                            'No posts yet',
-                            style: TextStyle(color: Colors.white70),
-                          ),
-                        )
+                        const Padding(padding: EdgeInsets.all(40), child: Text('No activity yet', style: TextStyle(color: Colors.white54)))
                       else
                         ListView.builder(
                           shrinkWrap: true,
@@ -176,61 +142,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           itemCount: _userPosts.length,
                           itemBuilder: (context, index) {
                             final post = _userPosts[index];
-                            return Card(
-                              color: const Color(0xFF1A2A4E),
-                              margin: const EdgeInsets.only(bottom: 8),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 16),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF1A2A4E),
+                                borderRadius: BorderRadius.circular(15),
                               ),
                               child: ListTile(
-                                contentPadding: const EdgeInsets.all(12),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                 title: Text(
                                   post['title'] ?? 'Untitled',
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    color: Color(0xFFE8D5A3),
-                                    fontWeight: FontWeight.bold,
+                                  style: const TextStyle(color: Color(0xFFE8D5A3), fontWeight: FontWeight.bold, fontSize: 17),
+                                ),
+                                subtitle: Padding(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: Text(
+                                    post['body'] ?? '',
+                                    style: const TextStyle(color: Colors.white70, fontSize: 14),
                                   ),
                                 ),
-                                subtitle: Text(
-                                  post['body'] ?? '',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    color: Colors.white70,
-                                  ),
-                                ),
+                                trailing: const Icon(Icons.arrow_forward_ios_rounded, color: Color(0xFFC9A96E), size: 16),
                               ),
                             );
                           },
                         ),
+                      const SizedBox(height: 30),
                     ],
                   ),
                 ),
     );
   }
 
-  Widget _buildProfileItem(String label, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildStatColumn(String label, String count) {
+    return Column(
       children: [
-        Text(
-          '$label: ',
-          style: const TextStyle(
-            color: Color(0xFFC9A96E),
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Expanded(
-          child: Text(
-            value,
-            style: const TextStyle(color: Colors.white70),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
+        Text(count, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 4),
+        Text(label, style: const TextStyle(color: Colors.white54, fontSize: 12)),
       ],
     );
+  }
+
+  Widget _buildStatDivider() {
+    return Container(height: 30, width: 1, color: Colors.white10);
   }
 }

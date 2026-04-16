@@ -13,12 +13,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _isPasswordVisible = false;
 
   Future<void> _handleLogin() async {
     if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please enter username and password', 
+          content: Text('Please enter email and password', 
             style: TextStyle(color: Color(0xFFE8D5A3))),
           backgroundColor: Color(0xFF1A2A4E),
           behavior: SnackBarBehavior.floating,
@@ -42,14 +43,39 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushReplacementNamed(context, '/feed');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text(
-            'Login Failed - Check username/password\nTry: emilys / emilyspass',
-            style: const TextStyle(color: Color(0xFFE8D5A3)),
+            'Login Failed - Check email/password',
+            style: TextStyle(color: Color(0xFFE8D5A3)),
           ),
-          backgroundColor: const Color(0xFF1A2A4E),
+          backgroundColor: Color(0xFF1A2A4E),
           behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 4),
+          duration: Duration(seconds: 4),
+        ),
+      );
+    }
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    setState(() => _isLoading = true);
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    bool success = await authProvider.signInWithGoogle();
+
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+
+    if (success) {
+      Navigator.pushReplacementNamed(context, '/feed');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Google Sign-In Failed',
+            style: TextStyle(color: Color(0xFFE8D5A3)),
+          ),
+          backgroundColor: Color(0xFF1A2A4E),
+          behavior: SnackBarBehavior.floating,
         ),
       );
     }
@@ -80,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: _usernameController,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    hintText: 'Username',
+                    hintText: 'Email',
                     hintStyle: TextStyle(color: const Color(0xFFC9A96E).withValues(alpha: 0.5)),
                     enabledBorder: const UnderlineInputBorder(
                       borderSide: BorderSide(color: Color(0xFFC9A96E)),
@@ -93,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 20),
                 TextField(
                   controller: _passwordController,
-                  obscureText: true,
+                  obscureText: !_isPasswordVisible,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     hintText: 'Password',
@@ -103,6 +129,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     focusedBorder: const UnderlineInputBorder(
                       borderSide: BorderSide(color: Color(0xFFE8D5A3), width: 2),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        color: const Color(0xFFC9A96E),
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
                     ),
                   ),
                 ),
@@ -129,12 +166,30 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
+                          const SizedBox(height: 15),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 50,
+                            child: OutlinedButton.icon(
+                              onPressed: _handleGoogleSignIn,
+                              icon: const Icon(Icons.g_mobiledata, color: Color(0xFFC9A96E), size: 36),
+                              label: const Text(
+                                'CONTINUE WITH GOOGLE',
+                                style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1),
+                              ),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: const Color(0xFFC9A96E),
+                                side: const BorderSide(color: Color(0xFFC9A96E), width: 2),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
+                              ),
+                            ),
+                          ),
                           const SizedBox(height: 20),
                           TextButton(
                             onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Register Screen Coming Soon...')),
-                              );
+                              Navigator.pushReplacementNamed(context, '/register');
                             },
                             child: const Text(
                               "DON'T HAVE AN ACCOUNT? REGISTER",

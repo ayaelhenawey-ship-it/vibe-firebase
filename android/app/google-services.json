@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "657689795896",
+    "project_id": "product-task-app",
+    "storage_bucket": "product-task-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:657689795896:android:308b0ba78ab02acbf935cd",
+        "android_client_info": {
+          "package_name": "com.example.product_task_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "657689795896-m9hjo2fatkgvn0c3u4fht8c3d3ois36h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPFl27jqqcfMZBkQJmSpvBbOyR2EgBFVA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "657689795896-m9hjo2fatkgvn0c3u4fht8c3d3ois36h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:657689795896:android:5dffaa571b6a3015f935cd",
+        "android_client_info": {
+          "package_name": "com.example.vibe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "657689795896-m9hjo2fatkgvn0c3u4fht8c3d3ois36h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPFl27jqqcfMZBkQJmSpvBbOyR2EgBFVA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "657689795896-m9hjo2fatkgvn0c3u4fht8c3d3ois36h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

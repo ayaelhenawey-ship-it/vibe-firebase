@@ -9,10 +9,3 @@ class AppColors {
   static const textPrimary   = Color(0xFFEEEEEE);
   static const textSecondary = Color(0xFF8A9BB5);
 }
-
-class AppApi {
-  static const loginUrl    = 'https://dummyjson.com/auth/login';
-  static const postsUrl    = 'https://jsonplaceholder.typicode.com/posts';
-  static const commentsUrl = 'https://jsonplaceholder.typicode.com/posts';
-  static const usersUrl    = 'https://dummyjson.com/users';
-}

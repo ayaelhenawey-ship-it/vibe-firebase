@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class PostModel {
-  final int id;
+  final String id;
   final String title;
   final String body;
-  final int userId;
+  final String userId;
   bool isLiked;
   int likeCount;
 
@@ -15,14 +17,26 @@ class PostModel {
     this.likeCount = 0,
   });
 
-  factory PostModel.fromJson(Map<String, dynamic> json) {
+ factory PostModel.fromJson(Map<String, dynamic> json) {
     return PostModel(
-      id: json['id'] ?? 0,
+      id: json['id']?.toString() ?? '',
       title: json['title'] ?? '',
       body: json['body'] ?? '',
-      userId: json['userId'] ?? 0,
-      isLiked: json['isLiked'] ?? false,
-      likeCount: json['likeCount'] ?? 0,
+      userId: json['userId']?.toString() ?? '0',
+      isLiked: json['isLiked'] is bool ? json['isLiked'] : false,
+      likeCount: int.tryParse(json['likeCount']?.toString() ?? '0') ?? 0,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'body': body,
+      'userId': userId,
+      'isLiked': isLiked,
+      'likeCount': likeCount,
+      'timestamp': FieldValue.serverTimestamp(),
+    };
   }
 }

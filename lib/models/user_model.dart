@@ -1,5 +1,5 @@
 class UserModel {
-  final int id;
+  final dynamic id;
   final String firstName;
   final String lastName;
   final String username;
@@ -9,15 +9,17 @@ class UserModel {
 
   UserModel({
     required this.id,
-    required this.firstName,
-    required this.lastName,
+    this.firstName = '',
+    this.lastName = '',
     required this.username,
     required this.email,
-    required this.image,
-    required this.token,
+    this.image = '',
+    this.token = '',
   });
 
-  String get fullName => '$firstName $lastName';
+  String get fullName => firstName.isNotEmpty || lastName.isNotEmpty 
+      ? '$firstName $lastName'.trim() 
+      : username;
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(

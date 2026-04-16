@@ -108,7 +108,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       Text(
                         'YOUR SOCIAL SPACE',
                         style: TextStyle(
-                          color: const Color(0xFFC9A96E).withValues(alpha: 0.45), // تم استبدال withOpacity
+                          color: const Color(0xFFC9A96E).withValues(alpha: 0.45),
                           fontSize: 12,
                           letterSpacing: 3,
                         ),
@@ -151,21 +151,21 @@ class VibeLogoPainter extends CustomPainter {
       ..strokeWidth = 3.5
       ..strokeCap = StrokeCap.round;
 
-    // 1. رسم حرف الـ V (إحداثيات الـ SVG المظبوطة)
+
     final vPath = Path()
       ..moveTo(52, 42)
       ..lineTo(100, 138)
       ..lineTo(148, 42);
     canvas.drawPath(vPath, vPaint);
 
-    // 2. رسم الشرطة العرضية
+
     canvas.drawLine(
       const Offset(68, 72),
       const Offset(132, 72),
       vPaint..strokeWidth = 14,
     );
 
-    // 3. رسم الحلقة بأنيميشن (Drawing)
+
     final ringPath = Path()
       ..addOval(Rect.fromCenter(center: const Offset(100, 100), width: 156, height: 44));
 
@@ -176,6 +176,6 @@ class VibeLogoPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant VibeLogoPainter oldDelegate) => 
+  bool shouldRepaint(covariant VibeLogoPainter oldDelegate) =>
       oldDelegate.ringProgress != ringProgress;
 }

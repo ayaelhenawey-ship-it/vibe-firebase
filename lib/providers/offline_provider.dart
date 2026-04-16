@@ -29,7 +29,8 @@ class OfflineProvider with ChangeNotifier {
     }
   }
 
-  Future<void> removePost(int postId) async {
+
+  Future<void> removePost(String postId) async {
     _savedPosts.removeWhere((p) => p.id == postId);
     await _persistSavedPosts();
     notifyListeners();
@@ -50,7 +51,7 @@ class OfflineProvider with ChangeNotifier {
     await prefs.setStringList('saved_posts', saved);
   }
 
-  bool isPostSaved(int postId) {
+  bool isPostSaved(String postId) {
     return _savedPosts.any((p) => p.id == postId);
   }
 
